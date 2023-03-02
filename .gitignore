@@ -1,0 +1,7 @@
+# standare .gitignore file for fastapi projects
+# Byte-compiled / optimized / DLL files
+__pycache__/
+.env
+.idea
+venv
+
