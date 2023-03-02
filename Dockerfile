@@ -1,4 +1,5 @@
-from ubuntu:latest
+from python:3.10
+
 #
 # define the image name to sgma-api
 LABEL name="sgma-api"
@@ -9,7 +10,7 @@ LABEL description="This is the Dockerfile for the sgma-api"
 #
 
 RUN apt-get update
-RUN apt-get install wget -y
+# RUN apt-get install wget -y
 #
 # install odbc driver for sql server
 #WORKDIR /tmp
@@ -31,7 +32,7 @@ RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive TZ=America/Los_Angeles apt-get install -y tzdata
 #
 RUN apt-get install sudo -y && apt-get install git -y && apt-get install nano -y && apt-get install curl -y
-RUN apt-get install python3.10 -y && apt-get install python3-pip -y && apt-get install python3-venv -y
+# RUN apt-get install python3.10 -y && apt-get install python3-pip -y && apt-get install python3-venv -y
 RUN pip install "uvicorn[standard]"
 #
 # install pyodbc and dependencies for sql server
@@ -40,19 +41,11 @@ RUN apt-get install unixodbc-dev -sy
 RUN mkdir /app
 WORKDIR /app
 #
-RUN git clone
-#
-COPY ./.env /app
-COPY ./requirements.txt /app
-COPY ./start-api.sh /app
-#
-RUN python3 -m venv venv
-RUN . venv/bin/activate
-RUN pip3 install -r requirements.txt
+RUN git clone https://github.com/jcarter62/sgma-api.git /app && cd /app && chmod +x start-api.sh
+COPY ./.env /app/.env
+# RUN python3 -m venv venv && . venv/bin/activate
+RUN pip3 install --no-cache-dir --upgrade -r requirements.txt
 #
 EXPOSE 5150
 #
 CMD ["./start-api.sh"]
-
-
-
