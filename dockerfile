@@ -11,7 +11,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --no-compile -r requirements.txt
 
 COPY . /app
-# RUN chmod +x /app/start-api.sh
+# RUN chmod +x /app/start.sh
 #
 # CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "15400"]
 ENTRYPOINT ["bash"]
