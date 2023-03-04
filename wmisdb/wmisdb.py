@@ -22,9 +22,10 @@ class WMISDB:
     def _conn_str_(self, ):
         driver = 'Driver={ODBC Driver 17 for SQL Server}'
 
-        cstr = driver + ';Server=' + self._server + ';Database=' + self._database + ';' + \
-               'UID=' + self._username + ';PWD=' + self._password + ';' + \
-               'MARS_Connection=yes;'
+        cstr = driver + ';Server=' + self._server + ';Encrypt=No' + \
+               ';Database=' + self._database + ';' + \
+               'UID=' + self._username + ';PWD=' + self._password + ';'
+#               'MARS_Connection=yes;'
         return cstr
 
     def _connection_(self):
