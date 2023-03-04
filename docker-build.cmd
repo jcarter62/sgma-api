@@ -1,2 +1,2 @@
 docker rmi sgma-api -f
-docker build -t sgma-api .
+docker build -t sgma-api . --no-cache

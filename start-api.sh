@@ -1,6 +1,6 @@
 #!/bin/bash
 # Start the API server
 cd /app
-# source /app/venv/bin/activate
+. venv/bin/activate
 #
-uvicorn --host 0.0.0.0 --port 5150 --workers 1 main:app
+uvicorn main:app --host 0.0.0.0 --port 5150

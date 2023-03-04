@@ -1,1 +1,1 @@
-docker run -ti --rm sgma-api:latest /bin/bash
+docker run -ti --rm sgma-api
