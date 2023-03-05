@@ -5,6 +5,7 @@ from decouple import config
 
 class WMISDB:
     _server = ''
+    _instance = ''
     _database = ''
     _username = ''
     _password = ''
@@ -12,6 +13,7 @@ class WMISDB:
 
     def __init__(self) -> None:
         self._server = config('SERVER', default='localhost')
+        self._instance = config('INSTANCE', default='instance')
         self._database = config('DATABASE', default='database')
         self._username = config('UID', default='username')
         self._password = config('PASSWORD', default='password')
@@ -22,10 +24,9 @@ class WMISDB:
     def _conn_str_(self, ):
         driver = 'Driver={ODBC Driver 17 for SQL Server}'
 
-        cstr = driver + ';Server=' + self._server + ';Encrypt=No' + \
-               ';Database=' + self._database + ';' + \
-               'UID=' + self._username + ';PWD=' + self._password + ';'
-#               'MARS_Connection=yes;'
+        cstr = driver + ';SERVER=' + self._server + '\\' + self._instance + \
+               ';DATABASE=' + self._database + ';' + \
+               'UID=' + self._username + ';PWD=' + self._password + ';PORT=1433'
         return cstr
 
     def _connection_(self):
