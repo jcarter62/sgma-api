@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 from db import db_route
 from parcel import parcel_routes
 from wellassoc import wellassoc_routes
 from account import account_routes
+from decouple import config
 
 
 app = FastAPI()
@@ -11,6 +13,22 @@ app.include_router(parcel_routes, prefix="/parcel", tags=["parcel"])
 app.include_router(wellassoc_routes, prefix="/well-assoc", tags=["well-assoc"])
 app.include_router(account_routes, prefix="/account", tags=["account"])
 app.include_router(db_route, prefix="/db", tags=["db"])
+
+
+def is_allowed(hostip) -> bool:
+    try:
+        ipstr = config('ALLOWED_IPS', default='')
+        if ipstr == '':
+            return True
+
+        iplist = ipstr.split(',')
+        if hostip in iplist:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(str(e))
+        return False
 
 
 @app.get("/")
@@ -24,6 +42,10 @@ async def before_request(request: Request, call_next):
         method = request.method
         path = request.url.path
         print(f"method: {method}, path: {path}")
+        ip = str(request.client.host)
+        if not is_allowed(ip):
+            data = {"message": f"IP {ip} is not allowed to access this resource"}
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content=data)
         response = await call_next(request)
     finally:
         pass

@@ -13,7 +13,7 @@ class WMISDB:
 
     def __init__(self) -> None:
         self._server = config('SERVER', default='localhost')
-        self._instance = config('INSTANCE', default='instance')
+        self._instance = config('INSTANCE', default='')
         self._database = config('DATABASE', default='database')
         self._username = config('UID', default='username')
         self._password = config('PASSWORD', default='password')
@@ -22,12 +22,18 @@ class WMISDB:
         super().__init__()
 
     def _conn_str_(self, ):
-        driver = 'Driver={ODBC Driver 17 for SQL Server}'
+        con_str = 'Driver={ODBC Driver 17 for SQL Server};'
 
-        cstr = driver + ';SERVER=' + self._server + '\\' + self._instance + \
-               ';DATABASE=' + self._database + ';' + \
-               'UID=' + self._username + ';PWD=' + self._password + ';PORT=1433'
-        return cstr
+        con_str += 'SERVER=' + self._server
+        if self._instance != '':
+            con_str += '\\' + self._instance
+        con_str += ';'
+
+        con_str += 'DATABASE=' + self._database + ';'
+        con_str += 'UID=' + self._username + ';'
+        con_str += 'PWD=' + self._password + ';'
+        con_str += 'PORT=1433;ENCRYPT=NO;'
+        return con_str
 
     def _connection_(self):
         if self.connection is None:
