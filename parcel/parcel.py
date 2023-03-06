@@ -1,4 +1,4 @@
-from wmisdb.wmisdb import WMISDB
+from wmisdb import WMISDB
 from decouple import config
 
 

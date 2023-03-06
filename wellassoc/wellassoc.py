@@ -1,4 +1,4 @@
-from wmisdb.wmisdb import WMISDB
+from wmisdb import WMISDB
 
 
 class WellAssoc:
@@ -51,7 +51,6 @@ class WellAssoc:
             print(str(e))
         return result
 
-
     def get_account_details(self, account: str) -> str:
         result = ''
         conn = self._wmisdb.connection
@@ -78,7 +77,6 @@ class WellAssoc:
             print(str(e))
         return result
 
-
     def well_assoc_one(self, well_id: str) -> []:
         result = []
         conn = self._wmisdb.connection
@@ -97,7 +95,8 @@ class WellAssoc:
             print(str(e))
         return result
 
-    def well_assoc_add(self, well_id: str, account: str, amount: float, method: str, begindate: str, enddate: str, ordering: int, isactive: int) -> []:
+    def well_assoc_add(self, well_id: str, account: str, amount: float, method: str, begindate: str, enddate: str,
+                       ordering: int, isactive: int) -> []:
         result = []
         conn = self._wmisdb.connection
         cursor = conn.cursor()
@@ -117,7 +116,6 @@ class WellAssoc:
             print(str(e))
         return result
 
-
     def well_list_all(self) -> []:
         result = []
         conn = self._wmisdb.connection
@@ -134,7 +132,6 @@ class WellAssoc:
         except Exception as e:
             print(str(e))
         return result
-
 
     def well_list_one(self, well_id: str) -> []:
         result = []
@@ -155,8 +152,7 @@ class WellAssoc:
             print(str(e))
         return result
 
-
-    def lookup_one_record(self, rec_id:str) -> {}:
+    def lookup_one_record(self, rec_id: str) -> {}:
         result = None
         conn = self._wmisdb.connection
         cursor = conn.cursor()
@@ -173,7 +169,7 @@ class WellAssoc:
         return result
 
     def delete_one_record(self, rec_id: str) -> bool:
-        '''Delete one record, and return True if successful, False if not.'''
+        """Delete one record, and return True if successful, False if not."""
         conn = self._wmisdb.connection
         cursor = conn.cursor()
         cmd = f'delete from sgma_wellassoc where rec_id = \'{rec_id}\';'
@@ -186,13 +182,13 @@ class WellAssoc:
             result = False
         return result
 
-
-    def update_one_record(self, rec_id: str, well_id: str, account: str, amount: float, method: str, begindate: str, enddate: str, ordering: int, isactive: int) -> {}:
+    def update_one_record(self, rec_id: str, well_id: str, account: str, amount: float, method: str, begindate: str,
+                          enddate: str, ordering: int, isactive: int) -> {}:
         result = None
         conn = self._wmisdb.connection
         cursor = conn.cursor()
-        cmd = 'update sgma_wellassoc ' +\
-              'set well_id = ?, account = ?, amount = ?, method = ?, ' +\
+        cmd = 'update sgma_wellassoc ' + \
+              'set well_id = ?, account = ?, amount = ?, method = ?, ' + \
               'begindate = ?, enddate = ?, ordering = ?, isactive = ? where rec_id = ?;'
         try:
             if enddate == '' or enddate == '1900-01-01':
@@ -208,12 +204,13 @@ class WellAssoc:
             print(str(e))
         return result
 
-    def insert_one_record(self, rec_id: str, well_id: str, account: str, amount: float, method: str, begindate: str, enddate: str, ordering: int, isactive: int) -> {}:
+    def insert_one_record(self, rec_id: str, well_id: str, account: str, amount: float, method: str, begindate: str,
+                          enddate: str, ordering: int, isactive: int) -> {}:
         result = None
         conn = self._wmisdb.connection
         cursor = conn.cursor()
-        cmd = 'insert into sgma_wellassoc ' +\
-              '(rec_id, well_id, account, amount, method, begindate, enddate, ordering, isactive) ' +\
+        cmd = 'insert into sgma_wellassoc ' + \
+              '(rec_id, well_id, account, amount, method, begindate, enddate, ordering, isactive) ' + \
               'values (?, ?, ?, ?, ?, ?, ?, ?, ?);'
         try:
             if enddate == 'None':
@@ -231,7 +228,7 @@ class WellAssoc:
         return result
 
     def reorder_well_records(self, well_id):
-        '''Reorder sgma_wellassoc records by ordering and account.  Return True if successful, False otherwise.'''
+        """Reorder sgma_wellassoc records by ordering and account.  Return True if successful, False otherwise."""
         result = True
 
         conn = self._wmisdb.connection
@@ -240,8 +237,8 @@ class WellAssoc:
 
         # first get list of rec_ids, account, ordering
         cursor = conn.cursor()
-        cmd = 'select rec_id, account, ordering from sgma_wellassoc ' +\
-              'where well_id = \'' + well_id + '\' ' +\
+        cmd = 'select rec_id, account, ordering from sgma_wellassoc ' + \
+              'where well_id = \'' + well_id + '\' ' + \
               'order by ordering, account; '
         try:
             curs = cursor.execute(cmd)
@@ -313,5 +310,3 @@ class WellAssoc:
         result['RecordCount'] = record_count
 
         return result
-
-

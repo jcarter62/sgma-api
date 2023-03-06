@@ -13,14 +13,14 @@ app.include_router(wellassoc_routes, prefix="/well-assoc", tags=["well-assoc"])
 app.include_router(account_routes, prefix="/account", tags=["account"])
 
 
-def is_allowed(hostip) -> bool:
+def is_allowed(host_ip) -> bool:
     try:
-        ipstr = config('ALLOWED_IPS', default='')
-        if ipstr == '':
+        ip_addresses = config('ALLOWED_IPS', default='')
+        if ip_addresses == '':
             return True
 
-        iplist = ipstr.split(',')
-        if hostip in iplist:
+        iplist = ip_addresses.split(',')
+        if host_ip in iplist:
             return True
         else:
             return False

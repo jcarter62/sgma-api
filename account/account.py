@@ -1,5 +1,4 @@
-from wmisdb.wmisdb import WMISDB
-from decouple import config
+from wmisdb import WMISDB
 
 
 class Accounts:
@@ -10,9 +9,9 @@ class Accounts:
         super().__init__()
 
     def account_list_all(self,
-            search_term: str = None,
-            include: str = None
-    ) -> []:
+                         search_term: str = None,
+                         include: str = None
+                         ) -> []:
         result = []
         conn = self._wmisdb.connection
         cursor = conn.cursor()
@@ -26,7 +25,7 @@ class Accounts:
         elif include == 'active':
             cmd += 'where isnull(isactive,0) = 1 '
         else:
-            pass # default to all
+            pass  # default to all
 
         cmd += 'order by name_id ;'
 
