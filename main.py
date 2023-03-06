@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
-from db import db_route
 from parcel import parcel_routes
 from wellassoc import wellassoc_routes
 from account import account_routes
@@ -12,7 +11,6 @@ app = FastAPI()
 app.include_router(parcel_routes, prefix="/parcel", tags=["parcel"])
 app.include_router(wellassoc_routes, prefix="/well-assoc", tags=["well-assoc"])
 app.include_router(account_routes, prefix="/account", tags=["account"])
-app.include_router(db_route, prefix="/db", tags=["db"])
 
 
 def is_allowed(hostip) -> bool:
