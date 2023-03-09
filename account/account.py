@@ -10,12 +10,21 @@ class Accounts:
 
     def account_list_all(self,
                          search_term: str = None,
-                         include: str = None
+                         include: str = None,
+                         accounts_with_well: str = None,
                          ) -> []:
         result = []
         conn = self._wmisdb.connection
         cursor = conn.cursor()
         cmd = 'select name_id, fullname as account from name '
+        cmd = ''
+        cmd += 'SELECT n.name_id, n.fullname AS account, '
+        cmd += ' CASE WHEN w.account IS NULL THEN 0 ELSE 1 END AS has_well '
+        cmd += ' FROM name n '
+        cmd += ' LEFT JOIN ( '
+        cmd += '     SELECT DISTINCT account FROM sgma_wellassoc '
+        cmd += ' ) w ON n.name_id = w.account '
+
         if include is None:
             cmd += 'where isnull(isactive,0) = 1 '
         elif include == 'all':
@@ -31,21 +40,38 @@ class Accounts:
 
         try:
             for row in cursor.execute(cmd):
-                result.append({"account": row[0], "name": row[1]})
+                result.append({"account": row[0], "name": row[1], "has_well": row[2]})
         except Exception as e:
             print(str(e))
 
-        answer = []
+        rslt1 = []
+
+        if accounts_with_well is not None:
+            if accounts_with_well == '1':
+                cmpval = 1
+            else:
+                cmpval = 0
+            for item in result:
+                if item['has_well'] == cmpval:
+                    rslt1.append(item)
+        else:
+            rslt1 = result.copy()
+
+        rslt2 = []
 
         if search_term is not None:
             srch = search_term.lower()
-            for item in result:
+            for item in rslt1:
                 txt = str(item['account']) + ' ' + item['name'].lower()
                 if srch in txt:
-                    answer.append(item['account'])
+                    rslt2.append(item)
+                    # answer.append(item['account'])
         else:
-            for item in result:
-                answer.append(item['account'])
+            rslt2 = rslt1.copy()
+
+        answer = []
+        for item in rslt2:
+            answer.append(item['account'])
 
         return answer
 
