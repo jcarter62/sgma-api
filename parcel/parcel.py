@@ -45,10 +45,11 @@ class Parcels:
         result = []
         conn = self._wmisdb.connection
         cursor = conn.cursor()
-        cmd = f'select parcel_id from parcel order by parcel_id;'
+        cmd = f'select parcel_id, isactive from parcel order by parcel_id;'
         try:
             for row in cursor.execute(cmd):
-                result.append(row[0])
+                oneparcel = {'parcel_id': row[0], 'isactive': row[1]}
+                result.append(oneparcel)
         except Exception as e:
             print(str(e))
         conn.close()
