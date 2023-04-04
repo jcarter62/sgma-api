@@ -1,4 +1,8 @@
+"""
+Routes for reading module.
+"""
 from fastapi import APIRouter
+import datetime
 from .reading import Reading
 
 reading_routes = APIRouter()
@@ -35,6 +39,64 @@ async def get_meters():
     """Return list of meters."""
     t = Reading()
     data = t.meters()
+    if data is None:
+        msg = "No records found."
+    else:
+        msg = "Success."
+    return {"message": msg, "data": data}
+
+
+@reading_routes.post("/add")
+async def add_reading(well_id: str, reading: float, operator: str,
+                      read_date: str = None, read_time: str = None,
+                      note: str = None, ):
+    """Add a new reading to table"""
+    import uuid
+
+    reading_guid = uuid.uuid4().__str__()
+    reading_guid = reading_guid.lower()
+    reading_guid = reading_guid.replace('-', '')
+
+    if note is None:
+        note = ''
+
+    if read_date is None:
+        read_date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    if read_time is None:
+        read_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+
+    t = Reading()
+    data = t.add_reading(well_id, read_date, read_time, reading, operator, note, reading_guid)
+
+    if data is None:
+        msg = "Add Record Failed."
+    else:
+        msg = "Success."
+
+    return {"message": msg, "data": data}
+
+
+@reading_routes.post("/process_pendings")
+async def process_pending_readings():
+    """Process pending readings."""
+    t = Reading()
+    data = t.process_pending_readings()
+
+    if data is None:
+        msg = "Process Pending Reading Failed."
+    else:
+        msg = "Success."
+
+    return {"message": msg, "data": data}
+
+
+@reading_routes.get("/well-status")
+async def get_well_status():
+    """Return list of wells and their status."""
+    t = Reading()
+    data = t.get_well_status()
     if data is None:
         msg = "No records found."
     else:
