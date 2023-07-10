@@ -1,1 +1,1 @@
-from .wmisdb import WMISDB
+from .wmisdb import WMISDB, DBError

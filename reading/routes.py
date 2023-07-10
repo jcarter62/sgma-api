@@ -1,8 +1,11 @@
 """
 Routes for reading module.
 """
+import base64
+
 from fastapi import APIRouter
 import datetime
+import json
 from .reading import Reading
 
 reading_routes = APIRouter()
@@ -47,9 +50,10 @@ async def get_meters():
 
 
 @reading_routes.post("/add")
-async def add_reading(well_id: str, reading: float, operator: str,
-                      read_date: str = None, read_time: str = None,
-                      note: str = None, ):
+async def add_reading(params):
+# async def add_reading(well_id: str, reading: float, operator: str,
+#                       read_date: str = None, read_time: str = None,
+#                       note: str = None, ):
     """Add a new reading to table"""
     import uuid
 
@@ -57,18 +61,30 @@ async def add_reading(well_id: str, reading: float, operator: str,
     reading_guid = reading_guid.lower()
     reading_guid = reading_guid.replace('-', '')
 
-    if note is None:
-        note = ''
+    # decode params from base64 encoded string
+    params = params.encode('ascii')
+    params = base64.b64decode(params)
 
-    if read_date is None:
-        read_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    # convert params in JSON.stringify to dict
+    params = json.loads(params)
 
-    if read_time is None:
-        read_time = datetime.datetime.now().strftime("%H:%M:%S")
+    params['note'] = ''
+
+    if params['readingdate'] is None:
+        params['readingdate'] = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    if params['readingtime'] is None:
+        params['readingtime'] = datetime.datetime.now().strftime("%H:%M:%S")
 
 
     t = Reading()
-    data = t.add_reading(well_id, read_date, read_time, reading, operator, note, reading_guid)
+    data = t.add_reading(well_id=params['meter_id'],
+                         date=params['readingdate'],
+                         time=params['readingtime'],
+                         reading=params['readingvalue'],
+                         operator=params['user_name'],
+                         note=params['note'],
+                         guid=reading_guid)
 
     if data is None:
         msg = "Add Record Failed."
