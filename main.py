@@ -1,9 +1,11 @@
 """
 The main module of the sgma-api system
 """
+
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from decouple import config, UndefinedValueError
+from datetime import datetime
 from parcel import parcel_routes
 from wellassoc import wellassoc_routes
 from account import account_routes
@@ -54,7 +56,10 @@ async def before_request(request: Request, call_next):
     try:
         method = request.method
         path = request.url.path
-        print(f"method: {method}, path: {path}")
+        req_ip = request.client.host
+        # set iso_datetime with current datetime in iso format
+        iso_datetime = datetime.now().isoformat()
+        print(f"{iso_datetime} {req_ip}:{method}:{path}")
         ip_addr = str(request.client.host)
         if not is_allowed(ip_addr):
             data = {"message": f"IP {ip_addr} is not allowed to access this resource"}
