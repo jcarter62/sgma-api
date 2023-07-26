@@ -1,6 +1,5 @@
 """
 The main module of the sgma-api system
-
 """
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
