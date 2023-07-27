@@ -39,3 +39,12 @@ async def get_account_wells(account: int):
     data = accounts.account_wells(account)
 
     return {"message": "Success.", "data": data}
+
+
+@account_routes.get("/balance/{account}")
+async def get_wcat_balances(account: int):
+    """Return a list of water categories, category text, qty and priorities for one account."""
+    accounts = Accounts()
+    data = accounts.account_categories(account=account)
+    return {"message": "Success.", "data": data}
+

@@ -116,3 +116,55 @@ class Accounts:
             print(str(e))
 
         return result
+
+    def account_categories(self, account: int) -> []:
+        result = []
+        conn = self._wmisdb.connection
+        cursor = conn.cursor()
+        #
+        # Multiple like query using pyodbc: https://stackoverflow.com/q/64568853
+        #
+        cmd = "set nocount on; \n"
+        cmd += f"declare @account int = {account}; \n"
+        cmd += "declare @cc varchar(6) = 'CC0013'; \n"
+        cmd += "declare @year varchar(4); \n"
+        cmd += "\n"
+        cmd += "select @year = x.WaterYear \n"
+        cmd += "from S_WATERYEARS x \n"
+        cmd += "where getdate() between x.BeginDate and x.EndDate \n"
+        cmd += " \n"
+        cmd += "select wt.Code_ID, c.Description as code_text, sum(wt.Amount) as qty, cast(0 as int) as Priority \n"
+        cmd += "into #t \n"
+        cmd += "from WTRTRANS wt \n"
+        cmd += "join codecode cc on cc.PrimaryCode_ID = wt.Code_ID and cc.Code_ID = @cc \n"
+        cmd += "join code c on wt.Code_ID = c.CODE_ID \n"
+        cmd += "where wt.WaterYear = @year and wt.Name_ID = @account \n"
+        cmd += "group by wt.Code_ID, c.Description; \n"
+        cmd += " \n"
+        cmd += "update #t  \n"
+        cmd += "set Priority = dcp.Priority \n"
+        cmd += "from #t t  \n"
+        cmd += "join DefaultCatPriority dcp  \n"
+        cmd += "  on t.Code_ID = dcp.Category_ID and \n"
+        cmd += "     ( getdate() between dcp.StartDate and isnull( dcp.EndDate, getdate() + 1) ); \n"
+        cmd += " \n"
+        cmd += "update #t  \n"
+        cmd += "set Priority = ncp.Priority \n"
+        cmd += "from #t t  \n"
+        cmd += "join NameCatPriority ncp \n"
+        cmd += "  on t.Code_ID = ncp.Category_ID and @account = ncp.Name_ID and \n"
+        cmd += "     ( getdate() between ncp.StartDate and isnull( ncp.EndDate, getdate() + 1) ); \n"
+        cmd += " \n"
+        cmd += "select * from #t order by Priority; \n"
+        cmd += " \n"
+        cmd += "drop table #t; \n"
+
+        try:
+            for row in cursor.execute(cmd):
+                rowdata = self._wmisdb.extract_row(row)
+                result.append(rowdata)
+        except Exception as e:
+            print(str(e))
+
+        return result
+
