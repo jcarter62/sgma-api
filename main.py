@@ -9,6 +9,7 @@ from parcel import parcel_routes
 from wellassoc import wellassoc_routes
 from account import account_routes
 from reading import reading_routes
+from misc import misc_routes
 
 
 app = FastAPI()
@@ -17,6 +18,7 @@ app.include_router(parcel_routes, prefix="/parcel", tags=["parcel"])
 app.include_router(wellassoc_routes, prefix="/well-assoc", tags=["well-assoc"])
 app.include_router(account_routes, prefix="/account", tags=["account"])
 app.include_router(reading_routes, prefix="/reading", tags=["reading"])
+app.include_router(misc_routes, prefix='/misc', tags=['misc'])
 
 
 def is_allowed(host_ip) -> bool:
