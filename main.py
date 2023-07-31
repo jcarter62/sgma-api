@@ -10,6 +10,8 @@ from wellassoc import wellassoc_routes
 from account import account_routes
 from reading import reading_routes
 from misc import misc_routes
+from gwcalc import gwcalc_routes
+
 
 
 app = FastAPI()
@@ -19,6 +21,7 @@ app.include_router(wellassoc_routes, prefix="/well-assoc", tags=["well-assoc"])
 app.include_router(account_routes, prefix="/account", tags=["account"])
 app.include_router(reading_routes, prefix="/reading", tags=["reading"])
 app.include_router(misc_routes, prefix='/misc', tags=['misc'])
+app.include_router(gwcalc_routes, prefix='/gwcalc', tags=['gwcalc'])
 
 
 def is_allowed(host_ip) -> bool:
