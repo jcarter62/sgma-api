@@ -12,14 +12,16 @@ class DataCalc:
 
     def __init__(self) -> None:
         self.post = 0
-        self._wmisdb = WMISDB()
+        # self._wmisdb = WMISDB()
         super().__init__()
 
     def __del__(self):
-        del self._wmisdb
+        if self._wmisdb is not None:
+            del self._wmisdb
 
     def sp_gwcalc(self, from_date, to_date, calc_date, tc_code, code_code, post) -> []:
         result = []
+        self._wmisdb = WMISDB()
         conn = self._wmisdb.connection
         cursor = conn.cursor()
         cmd = f'exec sp_gwcalc @from_date = ?, @to_date = ?, ' \
@@ -32,6 +34,7 @@ class DataCalc:
             row = cursor.fetchone()
             item = self._wmisdb.extract_row(row)
             result.append(item)
+            conn.commit()
         except Exception as e:
             print(str(e))
         try:
@@ -42,6 +45,7 @@ class DataCalc:
 
     def load_results(self) -> []:
         results = []
+        self._wmisdb = WMISDB()
         conn = self._wmisdb.connection
         cursor = conn.cursor()
         cmd = 'select * from gwcalc_results order by name_id, code_id, description;'
@@ -55,6 +59,7 @@ class DataCalc:
 
     def load_status(self) -> []:
         results = []
+        self._wmisdb = WMISDB()
         conn = self._wmisdb.connection
         cursor = conn.cursor()
         cmd = 'select * from gwcalc_status;'
