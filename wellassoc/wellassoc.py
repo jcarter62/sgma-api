@@ -301,7 +301,8 @@ class WellAssoc:
             for row in curs:
                 data = self._wmisdb.extract_row(row)
                 if data is not None:
-                    total_amount += float(data['amount'])
+                    if int(data['isactive']) == 1:
+                        total_amount += float(data['amount'])
                     record_count += 1
         except Exception as e:
             print(str(e))
