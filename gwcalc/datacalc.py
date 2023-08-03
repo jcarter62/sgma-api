@@ -9,25 +9,27 @@ class DataCalc:
     tc_code = None
     code_code = None
     post = None
+    username = None
 
-    def __init__(self) -> None:
+    def __init__(self, username: str = None) -> None:
         self.post = 0
         # self._wmisdb = WMISDB()
+        self.username = username
         super().__init__()
 
     def __del__(self):
         if self._wmisdb is not None:
             del self._wmisdb
 
-    def sp_gwcalc(self, from_date, to_date, calc_date, tc_code, code_code, post) -> []:
+    def sp_gwcalc(self, from_date, to_date, calc_date, tc_code, code_code, post_param) -> []:
         result = []
         self._wmisdb = WMISDB()
         conn = self._wmisdb.connection
         cursor = conn.cursor()
         cmd = f'exec sp_gwcalc @from_date = ?, @to_date = ?, ' \
               f'@calc_date = ?, @tc_code = ?, @code_code = ?, ' \
-              f'@post = ?;'
-        params = (from_date, to_date, calc_date, tc_code, code_code, post)
+              f'@post = ?,@username = ?;'
+        params = (from_date, to_date, calc_date, tc_code, code_code, int(post_param), self.username)
 
         try:
             cursor.execute(cmd, params)
@@ -62,7 +64,10 @@ class DataCalc:
         self._wmisdb = WMISDB()
         conn = self._wmisdb.connection
         cursor = conn.cursor()
-        cmd = 'select * from gwcalc_status;'
+        # cmd = 'select * from gwcalc_status;'
+        cmd = "select gs.*, " + \
+              "(select count(*) from gwcalc_results where code_id like '%er%') as errors " + \
+              "from gwcalc_status gs;"
         try:
             for row in cursor.execute(cmd):
                 item = self._wmisdb.extract_row(row)
