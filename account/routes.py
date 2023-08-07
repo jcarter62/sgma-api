@@ -48,3 +48,9 @@ async def get_wcat_balances(account: int):
     data = accounts.account_categories(account=account)
     return {"message": "Success.", "data": data}
 
+@account_routes.get("/transactions/{account}")
+async def get_wcat_transactions(account: int):
+    """Return a list of water transactions for one account."""
+    accounts = Accounts()
+    data = accounts.account_transactions(account=account)
+    return {"message": "Success.", "data": data}

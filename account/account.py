@@ -168,3 +168,37 @@ class Accounts:
 
         return result
 
+
+    def account_transactions(self, account: int) -> []:
+        result = []
+        conn = self._wmisdb.connection
+        cursor = conn.cursor()
+        #
+        # Multiple like query using pyodbc: https://stackoverflow.com/q/64568853
+        #
+        cmd = "set nocount on; \n"
+        cmd += f"declare @account int = {account}; \n"
+        cmd += "declare @cc varchar(6) = 'CC0013'; \n"
+        cmd += "declare @year varchar(4); \n"
+        cmd += "\n"
+        cmd += "select @year = x.WaterYear \n"
+        cmd += "from S_WATERYEARS x \n"
+        cmd += "where getdate() between x.BeginDate and x.EndDate \n"
+        cmd += " \n"
+        cmd += "select \n"
+        cmd += "  wt.Code_id, left(convert(varchar, wt.Date, 120),10) as TranDate, \n"
+        cmd += "  wt.Description as Tran_text, wt.Amount as Tran_qty, wt.TransType, wt.WTRType  \n"
+        cmd += "from WTRTRANS wt \n"
+        cmd += "join CodeCode cc on wt.Code_ID = cc.PrimaryCode_ID and cc.Code_ID = @cc \n"
+        cmd += "where wt.WaterYear = @year and wt.Name_ID = @account \n"
+        cmd += "order by wt.Code_ID, wt.WtrTrans_ID; \n"
+
+        try:
+            for row in cursor.execute(cmd):
+                rowdata = self._wmisdb.extract_row(row)
+                result.append(rowdata)
+        except Exception as e:
+            print(str(e))
+
+        return result
+
