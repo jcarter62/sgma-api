@@ -31,3 +31,13 @@ async def get_gwcalc_status():
     data = dc.load_status()
 
     return {"message": "Success.", "data": data}
+
+
+@gwcalc_routes.get("/calc_history")
+async def get_gwcalc_history():
+    """Retrieve data from table gwcalc_status_hist."""
+    dc = DataCalc()
+    data = dc.load_history()
+
+    return {"message": "Success.", "data": data}
+

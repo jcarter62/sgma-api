@@ -76,4 +76,18 @@ class DataCalc:
             print(str(e))
         return results
 
-
+    def load_history(self) -> []:
+        results = []
+        self._wmisdb = WMISDB()
+        conn = self._wmisdb.connection
+        cursor = conn.cursor()
+        cmd = "select gs.* " + \
+              "from gwcalc_status_hist gs " +\
+                "order by updated desc;"
+        try:
+            for row in cursor.execute(cmd):
+                item = self._wmisdb.extract_row(row)
+                results.append(item)
+        except Exception as e:
+            print(str(e))
+        return results
