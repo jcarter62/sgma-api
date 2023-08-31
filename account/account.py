@@ -202,3 +202,27 @@ class Accounts:
 
         return result
 
+    def account_well_graph_data(self, account: int, months: int, show_wells: int):
+        results = []
+        conn = self._wmisdb.connection
+        cursor = conn.cursor()
+        #
+        # Multiple like query using pyodbc: https://stackoverflow.com/q/64568853
+        #
+        cmd = f'sp_sgma_monthly_acft @account = {account} '
+        if months is not None:
+            cmd += f', @months = {months} '
+
+        if show_wells is not None:
+            cmd += f', @show_wells = {show_wells} '
+
+        cmd += ';'
+
+        try:
+            for row in cursor.execute(cmd):
+                rowdata = self._wmisdb.extract_row(row)
+                results.append(rowdata)
+        except Exception as e:
+            print(str(e))
+
+        return results

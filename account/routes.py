@@ -54,3 +54,14 @@ async def get_wcat_transactions(account: int):
     accounts = Accounts()
     data = accounts.account_transactions(account=account)
     return {"message": "Success.", "data": data}
+
+
+@account_routes.get("/well-graph-data")
+async def get_well_graph_data(account: int, show_wells: str = None, months: int = None):
+    """Return a list of well readings for one account.  Account is required.  Show_wells and months are optional.\n
+    If show_wells is not provided, return dataset contains well_id, month and acft.\n
+    If months is not provided, 12 months are returned."""
+
+    accounts = Accounts()
+    data = accounts.account_well_graph_data(account=account, show_wells=show_wells, months=months)
+    return {"message": "Success.", "data": data}
