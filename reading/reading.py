@@ -234,3 +234,37 @@ class Reading:
         finally:
             conn.close()
         return data
+
+    def get_well_readings_year(self, days: int = 365) -> List[Dict]:
+        """Get well readings for a year by default"""
+        data = []
+        conn = self._wmisdb.connection
+        cursor = conn.cursor()
+
+        cmd = ''
+        cmd += 'select r.Turnout_ID as Well_ID, isnull(r.Metered, 0) as Metered, \n'
+        cmd += 'r.ReadingDate, r.Odometer, t.Subsystem_ID as MeterType, r.PriorReadingDate, r.PriorReading, \n'
+        cmd += 'r.Notes, r.AuditMessages, \n'
+        cmd += 'case \n'
+        cmd += 'when r.trndel_id > 0 then \'OK - Sent to WMIS\' \n'
+        cmd += 'when r.TrnDel_ID < 0 then \'Rejected\' \n'
+        cmd += 'else \'Pending\' \n'
+        cmd += 'end as result \n'
+        cmd += 'from TabletMeterReadings r \n'
+        cmd += 'left join TurnoutCodes tc on r.Turnout_ID = tc.Turnout_ID \n'
+        cmd += 'left join turnout t on r.Turnout_ID = t.Turnout_ID \n'
+        cmd += f'where r.readingdate > (getdate() - {days}) \n'
+        cmd += 'and tc.Code_ID = \'TC0040\' \n'
+        cmd += 'order by r.Turnout_ID, r.ReadingDate; \n'
+
+        try:
+            for row in cursor.execute(cmd):
+                reading = self._wmisdb.extract_row(row)
+                data.append(reading)
+        except DBError as err:
+            print(f'Error in get_well_status {err}')
+        except Exception as err:
+            print(str(err))
+        finally:
+            conn.close()
+        return data

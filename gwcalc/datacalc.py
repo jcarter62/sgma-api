@@ -21,15 +21,16 @@ class DataCalc:
         if self._wmisdb is not None:
             del self._wmisdb
 
-    def sp_gwcalc(self, from_date, to_date, calc_date, tc_code, code_code, post_param) -> []:
+    def sp_gwcalc(self, from_date, to_date, calc_date, tc_code, code_code, cc_exclude, post_param) -> []:
         result = []
         self._wmisdb = WMISDB()
         conn = self._wmisdb.connection
         cursor = conn.cursor()
         cmd = f'exec sp_gwcalc @from_date = ?, @to_date = ?, ' \
               f'@calc_date = ?, @tc_code = ?, @code_code = ?, ' \
+              f'@cc_exclude = ?, ' \
               f'@post = ?,@username = ?;'
-        params = (from_date, to_date, calc_date, tc_code, code_code, int(post_param), self.username)
+        params = (from_date, to_date, calc_date, tc_code, code_code, cc_exclude, int(post_param), self.username)
 
         try:
             cursor.execute(cmd, params)

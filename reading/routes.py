@@ -119,3 +119,15 @@ async def get_well_status():
         msg = "Success."
     return {"message": msg, "data": data}
 
+
+@reading_routes.get("/well-readings-year")
+async def get_well_readings_year():
+    """Return Readings for all wells for the last year."""
+    t = Reading()
+    data = t.get_well_readings_year()
+    if data is None:
+        msg = "No records found."
+    else:
+        msg = "Success."
+    return {"message": msg, "data": data}
+

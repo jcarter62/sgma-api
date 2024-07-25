@@ -5,13 +5,13 @@ from typing import Optional
 gwcalc_routes = APIRouter()
 
 
-@gwcalc_routes.get("/calc/{from_date}/{to_date}/{calc_date}/{tc_code}/{code_code}/{post}")
+@gwcalc_routes.get("/calc/{from_date}/{to_date}/{calc_date}/{tc_code}/{code_code}/{cc_exclude}/{post}/user={username}")
 async def get_gwcalc(from_date: str, to_date: str, calc_date: str, tc_code: str,
-                     code_code: str, post: str, username: Optional[str] = ''):
+                     code_code: str, post: str, cc_exclude: str, username: str = ''):
     """Perform stored procedure exec of sp_gwcalc (params) ."""
 
     dc = DataCalc(username=username)
-    data = dc.sp_gwcalc(from_date, to_date, calc_date, tc_code, code_code, post)
+    data = dc.sp_gwcalc(from_date, to_date, calc_date, tc_code, code_code, cc_exclude, post)
 
     return {"message": "Success.", "data": data}
 
